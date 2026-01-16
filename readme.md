@@ -1,5 +1,5 @@
 # MIE GACOAN TYCOON SIMULATOR
-Game simulasi bisnis idle/kliker dengan latar belakang waralaba makanan ringan khas Indonesia (Mie Gacoan). 
+Game simulasi bisnis idle/kliker dengan latar belakang waralaba makanan ringan khas Indonesia (Mie Gacoan) berbasis browser
 Pemain memulai dari gerai kecil, melayani pelanggan secara simulasi, mengembangkan menu, dan membangun kerajaan kuliner mie kekinian.
 
 ## Fitur di dalam game simulasi : 
@@ -10,3 +10,4 @@ Pemain memulai dari gerai kecil, melayani pelanggan secara simulasi, mengembangk
 - Upgrade Restoran
 - Notifikasi Ketika Berhasil Upgrade
 - Notifikasi Uang Tidak Mencukupi
+- Responsive Untuk Mobile
