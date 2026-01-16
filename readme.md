@@ -13,4 +13,9 @@ Pemain dimulai dari gerai kecil, melayani pelanggan secara simulasi, mengembangk
 - Responsive Untuk Mobile
 - Simpan atau Reset Game Data
 
+## Engine yang digunakan :
+- HTML
+- JAVASCRIPT
+- CSS
+
 &copy; JMC World 2026
