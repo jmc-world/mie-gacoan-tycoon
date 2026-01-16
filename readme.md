@@ -11,3 +11,4 @@ Pemain dimulai dari gerai kecil, melayani pelanggan secara simulasi, mengembangk
 - Notifikasi Ketika Berhasil Upgrade
 - Notifikasi Uang Tidak Mencukupi
 - Responsive Untuk Mobile
+- Simpan atau Reset Game Data
