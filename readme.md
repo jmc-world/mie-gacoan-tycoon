@@ -12,3 +12,5 @@ Pemain dimulai dari gerai kecil, melayani pelanggan secara simulasi, mengembangk
 - Notifikasi Uang Tidak Mencukupi
 - Responsive Untuk Mobile
 - Simpan atau Reset Game Data
+
+&copy; JMC World 2026
