@@ -26,6 +26,9 @@
             touch-action: manipulation;
             overflow-x: hidden;
             min-height: 100vh;
+            /* PERBAIKAN: Mengizinkan scroll vertikal */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .container {
@@ -34,6 +37,8 @@
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 15px;
+            /* PERBAIKAN: Pastikan kontainer tidak membatasi tinggi */
+            min-height: auto;
         }
         
         header {
@@ -324,6 +329,7 @@
             justify-content: center;
             gap: 15px;
             margin-top: 15px;
+            margin-bottom: 20px; /* Ditambahkan untuk ruang di bawah */
         }
         
         .save-btn, .reset-btn {
@@ -1390,10 +1396,11 @@
         // Start the game when page loads
         document.addEventListener('DOMContentLoaded', initGame);
         
-        // Mencegah zoom dengan pinch gesture di mobile
-        document.addEventListener('touchmove', function(e) {
-            if (e.scale !== 1) { e.preventDefault(); }
-        }, { passive: false });
+        // PERBAIKAN: Hapus event listener yang mencegah scroll dengan pinch gesture
+        // Kode berikut dihapus untuk mengizinkan scroll:
+        // document.addEventListener('touchmove', function(e) {
+        //     if (e.scale !== 1) { e.preventDefault(); }
+        // }, { passive: false });
         
         // Mencegah konteks menu di mobile
         document.addEventListener('contextmenu', function(e) {
