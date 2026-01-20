@@ -26,7 +26,6 @@
             touch-action: manipulation;
             overflow-x: hidden;
             min-height: 100vh;
-            /* PERBAIKAN: Mengizinkan scroll vertikal */
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -37,7 +36,6 @@
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 15px;
-            /* PERBAIKAN: Pastikan kontainer tidak membatasi tinggi */
             min-height: auto;
         }
         
@@ -235,7 +233,7 @@
             opacity: 0.8;
         }
         
-        .progress-container {
+        .achievement-container {
             grid-column: 1 / -1;
             background-color: #16213e;
             border-radius: 12px;
@@ -244,22 +242,7 @@
             margin-top: 10px;
         }
         
-        .progress-bar {
-            height: 18px;
-            background-color: #0f3460;
-            border-radius: 9px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #e63946 0%, #f8c630 100%);
-            width: 0%;
-            transition: width 0.5s;
-        }
-        
-        .achievement-container {
+        .achievements-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 12px;
@@ -280,6 +263,7 @@
         
         .achievement.unlocked {
             border-color: #f8c630;
+            background-color: #1a472a;
         }
         
         .achievement-icon {
@@ -292,7 +276,6 @@
             color: #f8c630;
         }
         
-        /* NOTIFIKASI DI TENGAH LAYAR */
         .notification {
             position: fixed;
             top: 50%;
@@ -329,7 +312,7 @@
             justify-content: center;
             gap: 15px;
             margin-top: 15px;
-            margin-bottom: 20px; /* Ditambahkan untuk ruang di bawah */
+            margin-bottom: 20px;
         }
         
         .save-btn, .reset-btn {
@@ -371,7 +354,6 @@
             margin-top: 5px;
         }
         
-        /* Responsive Design untuk Mobile */
         @media (max-width: 768px) {
             .container {
                 grid-template-columns: 1fr;
@@ -417,7 +399,7 @@
                 min-width: auto;
             }
             
-            .achievement-container {
+            .achievements-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             
@@ -463,11 +445,11 @@
             }
             
             .menu-container, .upgrades-container, .employees-container, 
-            .restaurant-info, .main-action, .progress-container {
+            .restaurant-info, .main-action, .achievement-container {
                 padding: 12px;
             }
             
-            .achievement-container {
+            .achievements-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -478,7 +460,6 @@
             }
         }
         
-        /* Tambahan untuk perbaikan di iOS */
         @supports (-webkit-touch-callout: none) {
             .buy-btn, #serve-btn, .save-btn, .reset-btn {
                 cursor: pointer;
@@ -489,7 +470,6 @@
             }
         }
         
-        /* Overlay untuk notifikasi */
         .notification-overlay {
             position: fixed;
             top: 0;
@@ -507,13 +487,34 @@
             opacity: 1;
             pointer-events: all;
         }
+        
+        .completion-message {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f8c630 0%, #e6a500 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+        
+        .completion-message.show {
+            display: block;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1><i class="fas fa-utensils"></i> MIE GACOAN TYCOON</h1>
-            <p>Simlasi Game Restoran Viral di Indonesia</p>
+            <p>Simulasi Game Restoran Viral di Indonesia</p>
         </header>
         
         <div class="restaurant-info">
@@ -532,7 +533,7 @@
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">Prestasi Dicapai</div>
-                    <div class="stat-value" id="achievement-count">0/10</div>
+                    <div class="stat-value" id="achievement-count">0/9</div>
                 </div>
             </div>
             
@@ -548,7 +549,7 @@
             <h2><i class="fas fa-mug-hot"></i> Layani Pelanggan</h2>
             <button id="serve-btn">
                 <i class="fas fa-concierge-bell"></i> Sajikan Mie Gacoan!<br>
-                <span style="font-size: 0.8rem;">Rp 10 / klik</span>
+                <span style="font-size: 0.8rem;">Rp 50 / klik</span>
             </button>
             <p>Klik tombol untuk menyajikan mie gacoan kepada pelanggan dan hasilkan uang!</p>
         </div>
@@ -574,17 +575,17 @@
             </div>
         </div>
         
-        <div class="progress-container">
-            <h2><i class="fas fa-trophy"></i> Progress Restoran</h2>
-            <p>Tingkat Prestasi: <span id="prestige-level">1</span></p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="prestige-progress" style="width: 0%"></div>
-            </div>
-            <p>Peningkatan berikutnya: <span id="next-prestige">Rp 10.000</span></p>
-            
-            <div class="achievement-container" id="achievements">
+        <div class="achievement-container">
+            <h2><i class="fas fa-trophy"></i> Prestasi Restoran</h2>
+            <div class="achievements-grid" id="achievements">
                 <!-- Achievements akan diisi oleh JavaScript -->
             </div>
+        </div>
+        
+        <div class="completion-message" id="completion-message">
+            <h2><i class="fas fa-crown"></i> SELAMAT!</h2>
+            <p>Anda telah mengumpulkan semua prestasi! Anda adalah taipan Mie Gacoan sejati!</p>
+            <p>Game tetap dapat dimainkan untuk mencapai jumlah uang dan pelanggan yang lebih tinggi.</p>
         </div>
         
         <div class="save-section">
@@ -608,38 +609,36 @@
     <script>
         // Game State
         const gameState = {
-            money: 100,
+            money: 1000,
             totalCustomers: 0,
             incomePerClick: 50,
             autoIncome: 0,
-            prestigeLevel: 1,
-            prestigeProgress: 0,
-            nextPrestigeAt: 10000,
             playTime: 0,
-            hasAutoIncomeStarted: false, // Flag untuk menandai apakah pendapatan otomatis sudah dimulai
+            hasAutoIncomeStarted: false,
+            allAchievementsUnlocked: false,
             
             menu: [
-                { id: 1, name: "Mie Gacoan Level 1", level: 1, baseIncome: 10, cost: 100, desc: "Mie original dengan topping standar" },
-                { id: 2, name: "Mie Gacoan Level 2", level: 0, baseIncome: 20, cost: 500, desc: "Mie dengan tambahan pangsit dan bakso" },
-                { id: 3, name: "Mie Gacoan Level 3", level: 0, baseIncome: 80, cost: 2000, desc: "Mie premium dengan seafood" },
+                { id: 1, name: "Mie Gacoan Level 1", level: 1, baseIncome: 5, cost: 100, desc: "Mie original dengan topping standar" },
+                { id: 2, name: "Mie Gacoan Level 2", level: 0, baseIncome: 15, cost: 500, desc: "Mie dengan tambahan pangsit dan bakso" },
+                { id: 3, name: "Mie Gacoan Level 3", level: 0, baseIncome: 50, cost: 2000, desc: "Mie premium dengan seafood" },
                 { id: 4, name: "Mie Gacoan Level 4", level: 0, baseIncome: 200, cost: 10000, desc: "Mie super pedas dengan topping lengkap" },
                 { id: 5, name: "Mie Gacoan Level 5", level: 0, baseIncome: 1000, cost: 50000, desc: "Mie spesial chef dengan bahan import" }
             ],
             
             upgrades: [
-                { id: 1, name: "Iklan Sosial Media", level: 0, cost: 2500, incomeMultiplier: 1.2, desc: "Tingkatkan jumlah pelanggan dengan iklan" },
-                { id: 2, name: "Pelatihan Koki", level: 0, cost: 5000, incomeMultiplier: 1.5, desc: "Koki lebih cepat menyajikan mie" },
-                { id: 3, name: "Renovasi Restoran", level: 0, cost: 20000, incomeMultiplier: 2, desc: "Restoran lebih nyaman dan menarik" },
-                { id: 4, name: "Sistem POS Modern", level: 0, cost: 75000, incomeMultiplier: 3, desc: "Proses pemesanan lebih cepat" },
-                { id: 5, name: "Waralaba", level: 0, cost: 300000, incomeMultiplier: 5, desc: "Buka cabang di lokasi strategis" }
+                { id: 1, name: "Iklan Sosial Media", level: 0, cost: 500, incomeMultiplier: 1.2, desc: "Tingkatkan jumlah pelanggan dengan iklan" },
+                { id: 2, name: "Pelatihan Koki", level: 0, cost: 2000, incomeMultiplier: 1.5, desc: "Koki lebih cepat menyajikan mie" },
+                { id: 3, name: "Renovasi Restoran", level: 0, cost: 10000, incomeMultiplier: 2, desc: "Restoran lebih nyaman dan menarik" },
+                { id: 4, name: "Sistem POS Modern", level: 0, cost: 50000, incomeMultiplier: 3, desc: "Proses pemesanan lebih cepat" },
+                { id: 5, name: "Waralaba", level: 0, cost: 200000, incomeMultiplier: 5, desc: "Buka cabang di lokasi strategis" }
             ],
             
             employees: [
-                { id: 1, name: "Pelayan", level: 0, cost: 1000, autoIncome: 10, desc: "Melayani pelanggan secara otomatis" },
-                { id: 2, name: "Koki Junior", level: 0, cost: 5000, autoIncome: 20, desc: "Memasak mie secara otomatis" },
-                { id: 3, name: "Koki Senior", level: 0, cost: 25000, autoIncome: 60, desc: "Memasak mie lebih cepat" },
+                { id: 1, name: "Pelayan", level: 0, cost: 1000, autoIncome: 2, desc: "Melayani pelanggan secara otomatis" },
+                { id: 2, name: "Koki Junior", level: 0, cost: 5000, autoIncome: 10, desc: "Memasak mie secara otomatis" },
+                { id: 3, name: "Koki Senior", level: 0, cost: 25000, autoIncome: 50, desc: "Memasak mie lebih cepat" },
                 { id: 4, name: "Manajer", level: 0, cost: 100000, autoIncome: 200, desc: "Mengatur operasional restoran" },
-                { id: 5, name: "Chef Profesional", level: 0, cost: 500000, autoIncome: 500, desc: "Menciptakan menu baru yang laris" }
+                { id: 5, name: "Chef Profesional", level: 0, cost: 500000, autoIncome: 1000, desc: "Menciptakan menu baru yang laris" }
             ],
             
             achievementList: [
@@ -651,8 +650,7 @@
                 { id: 6, name: "Taipan Muda", desc: "Kumpulkan Rp 1.000.000", condition: 1000000, unlocked: false, icon: "fas fa-crown" },
                 { id: 7, name: "Upgrade Maksimal", desc: "Upgrade semua fasilitas", condition: 5, unlocked: false, icon: "fas fa-tools" },
                 { id: 8, name: "Restoran Populer", desc: "Layani 1.000 pelanggan", condition: 1000, unlocked: false, icon: "fas fa-fire" },
-                { id: 9, name: "Miliarder Mie", desc: "Kumpulkan Rp 10.000.000", condition: 10000000, unlocked: false, icon: "fas fa-gem" },
-                { id: 10, name: "Legenda Mie Gacoan", desc: "Capai tingkat prestise 5", condition: 5, unlocked: false, icon: "fas fa-trophy" }
+                { id: 9, name: "Miliarder Mie", desc: "Kumpulkan Rp 10.000.000", condition: 10000000, unlocked: false, icon: "fas fa-gem" }
             ]
         };
         
@@ -673,9 +671,7 @@
         const notificationOverlay = document.getElementById('notification-overlay');
         const saveGameButton = document.getElementById('save-game');
         const resetGameButton = document.getElementById('reset-game');
-        const prestigeLevelElement = document.getElementById('prestige-level');
-        const prestigeProgressElement = document.getElementById('prestige-progress');
-        const nextPrestigeElement = document.getElementById('next-prestige');
+        const completionMessage = document.getElementById('completion-message');
         
         // Variabel untuk mengontrol interval pendapatan otomatis
         let autoIncomeInterval = null;
@@ -690,13 +686,13 @@
         // Format angka ke format mata uang Indonesia
         function formatMoney(amount) {
             if (amount >= 1000000000) {
-                return `${(amount / 1000000000).toFixed(2)} Miliar`;
+                return `Rp ${(amount / 1000000000).toFixed(2)} Miliar`;
             } else if (amount >= 1000000) {
-                return `${(amount / 1000000).toFixed(2)} Juta`;
+                return `Rp ${(amount / 1000000).toFixed(2)} Juta`;
             } else if (amount >= 1000) {
-                return `${(amount / 1000).toFixed(3)} Ribu`;
+                return `Rp ${(amount / 1000).toFixed(2)} Ribu`;
             }
-            return `Rp ${amount}`;
+            return `Rp ${Math.floor(amount)}`;
         }
         
         // Tampilkan notifikasi di tengah layar
@@ -755,15 +751,9 @@
             autoIncomeElement.textContent = formatMoney(totalIncomePerSecond);
             totalCustomersElement.textContent = gameState.totalCustomers;
             
-            // Update progress prestise
-            const progressPercent = Math.min(100, (gameState.money / gameState.nextPrestigeAt) * 100);
-            prestigeProgressElement.style.width = `${progressPercent}%`;
-            prestigeLevelElement.textContent = gameState.prestigeLevel;
-            nextPrestigeElement.textContent = formatMoney(gameState.nextPrestigeAt);
-            
             // Update jumlah prestasi
             const unlockedAchievements = gameState.achievementList.filter(a => a.unlocked).length;
-            achievementCountElement.textContent = `${unlockedAchievements}/10`;
+            achievementCountElement.textContent = `${unlockedAchievements}/${gameState.achievementList.length}`;
             
             // Cek prestasi
             checkAchievements();
@@ -877,11 +867,9 @@
             // Tambahkan event listener untuk tombol menu (mobile-friendly)
             setTimeout(() => {
                 document.querySelectorAll('[data-menu-id]').forEach(button => {
-                    // Hapus event listener lama jika ada
                     button.replaceWith(button.cloneNode(true));
                 });
                 
-                // Tambahkan event listener baru
                 document.querySelectorAll('[data-menu-id]').forEach(button => {
                     const newButton = button;
                     newButton.addEventListener('click', function() {
@@ -1157,18 +1145,20 @@
                 newAchievements.push(gameState.achievementList[8].name);
             }
             
-            // Achievement 10: Capai tingkat prestise 5
-            if (!gameState.achievementList[9].unlocked && gameState.prestigeLevel >= 5) {
-                gameState.achievementList[9].unlocked = true;
-                newAchievements.push(gameState.achievementList[9].name);
-            }
-            
             // Tampilkan notifikasi untuk achievement baru
             if (newAchievements.length > 0) {
                 renderAchievements();
                 newAchievements.forEach(achievement => {
                     showNotification(`Prestasi terbuka: ${achievement}!`);
                 });
+                
+                // Cek apakah semua prestasi telah terkumpul
+                const allAchievementsUnlocked = gameState.achievementList.every(a => a.unlocked);
+                if (allAchievementsUnlocked && !gameState.allAchievementsUnlocked) {
+                    gameState.allAchievementsUnlocked = true;
+                    showNotification("SELAMAT! Anda telah mengumpulkan semua prestasi!");
+                    completionMessage.classList.add('show');
+                }
             }
         }
         
@@ -1196,40 +1186,6 @@
             }
         }
         
-        // Prestise system
-        function checkPrestige() {
-            if (gameState.money >= gameState.nextPrestigeAt) {
-                gameState.prestigeLevel++;
-                gameState.money = 1000; // Reset uang
-                gameState.nextPrestigeAt *= 5; // Naikkan target berikutnya
-                
-                // Reset beberapa progress
-                gameState.menu.forEach(menu => {
-                    menu.level = menu.id === 1 ? 1 : 0;
-                });
-                
-                gameState.upgrades.forEach(upgrade => {
-                    upgrade.level = 0;
-                });
-                
-                gameState.employees.forEach(employee => {
-                    employee.level = 0;
-                });
-                
-                // Reset flag pendapatan otomatis
-                gameState.hasAutoIncomeStarted = false;
-                
-                // Income per click bertambah dengan prestise
-                gameState.incomePerClick = 10 * gameState.prestigeLevel;
-                
-                showNotification(`Selamat! Anda mencapai Prestige Level ${gameState.prestigeLevel}!`);
-                updateStats();
-                renderMenuItems();
-                renderUpgradeItems();
-                renderEmployeeItems();
-            }
-        }
-        
         // Simpan game ke localStorage
         function saveGame() {
             const saveData = {
@@ -1237,11 +1193,9 @@
                 totalCustomers: gameState.totalCustomers,
                 incomePerClick: gameState.incomePerClick,
                 autoIncome: gameState.autoIncome,
-                prestigeLevel: gameState.prestigeLevel,
-                prestigeProgress: gameState.prestigeProgress,
-                nextPrestigeAt: gameState.nextPrestigeAt,
                 playTime: gameState.playTime,
                 hasAutoIncomeStarted: gameState.hasAutoIncomeStarted,
+                allAchievementsUnlocked: gameState.allAchievementsUnlocked,
                 menu: gameState.menu,
                 upgrades: gameState.upgrades,
                 employees: gameState.employees,
@@ -1259,25 +1213,28 @@
             if (savedData) {
                 const saveData = JSON.parse(savedData);
                 
-                gameState.money = saveData.money;
-                gameState.totalCustomers = saveData.totalCustomers;
-                gameState.incomePerClick = saveData.incomePerClick;
-                gameState.autoIncome = saveData.autoIncome;
-                gameState.prestigeLevel = saveData.prestigeLevel;
-                gameState.prestigeProgress = saveData.prestigeProgress;
-                gameState.nextPrestigeAt = saveData.nextPrestigeAt;
-                gameState.playTime = saveData.playTime;
+                gameState.money = saveData.money || 1000;
+                gameState.totalCustomers = saveData.totalCustomers || 0;
+                gameState.incomePerClick = saveData.incomePerClick || 50;
+                gameState.autoIncome = saveData.autoIncome || 0;
+                gameState.playTime = saveData.playTime || 0;
                 gameState.hasAutoIncomeStarted = saveData.hasAutoIncomeStarted || false;
-                gameState.menu = saveData.menu;
-                gameState.upgrades = saveData.upgrades;
-                gameState.employees = saveData.employees;
-                gameState.achievementList = saveData.achievementList;
+                gameState.allAchievementsUnlocked = saveData.allAchievementsUnlocked || false;
+                gameState.menu = saveData.menu || gameState.menu;
+                gameState.upgrades = saveData.upgrades || gameState.upgrades;
+                gameState.employees = saveData.employees || gameState.employees;
+                gameState.achievementList = saveData.achievementList || gameState.achievementList;
                 
                 updateStats();
                 renderMenuItems();
                 renderUpgradeItems();
                 renderEmployeeItems();
                 renderAchievements();
+                
+                // Tampilkan pesan penyelesaian jika semua prestasi telah terkumpul
+                if (gameState.allAchievementsUnlocked) {
+                    completionMessage.classList.add('show');
+                }
                 
                 showNotification('Game berhasil dimuat!');
             } else {
@@ -1295,11 +1252,9 @@
                 gameState.totalCustomers = 0;
                 gameState.incomePerClick = 50;
                 gameState.autoIncome = 0;
-                gameState.prestigeLevel = 1;
-                gameState.prestigeProgress = 0;
-                gameState.nextPrestigeAt = 10000;
                 gameState.playTime = 0;
                 gameState.hasAutoIncomeStarted = false;
+                gameState.allAchievementsUnlocked = false;
                 
                 gameState.menu = [
                     { id: 1, name: "Mie Gacoan Level 1", level: 1, baseIncome: 5, cost: 100, desc: "Mie original dengan topping standar" },
@@ -1335,6 +1290,9 @@
                     autoIncomeInterval = null;
                 }
                 
+                // Sembunyikan pesan penyelesaian
+                completionMessage.classList.remove('show');
+                
                 updateStats();
                 renderMenuItems();
                 renderUpgradeItems();
@@ -1355,7 +1313,6 @@
                 gameState.money += gameState.incomePerClick;
                 gameState.totalCustomers++;
                 updateStats();
-                checkPrestige();
             });
             
             // Tambahkan touch event untuk mobile
@@ -1364,7 +1321,6 @@
                 gameState.money += gameState.incomePerClick;
                 gameState.totalCustomers++;
                 updateStats();
-                checkPrestige();
             });
             
             saveGameButton.addEventListener('click', saveGame);
@@ -1382,9 +1338,6 @@
             // Setup play time counter
             setInterval(updatePlayTime, 1000);
             
-            // Setup prestige check interval
-            setInterval(checkPrestige, 5000);
-            
             // Initial render
             updateStats();
             renderMenuItems();
@@ -1395,12 +1348,6 @@
         
         // Start the game when page loads
         document.addEventListener('DOMContentLoaded', initGame);
-        
-        // PERBAIKAN: Hapus event listener yang mencegah scroll dengan pinch gesture
-        // Kode berikut dihapus untuk mengizinkan scroll:
-        // document.addEventListener('touchmove', function(e) {
-        //     if (e.scale !== 1) { e.preventDefault(); }
-        // }, { passive: false });
         
         // Mencegah konteks menu di mobile
         document.addEventListener('contextmenu', function(e) {
