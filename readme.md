@@ -5,14 +5,13 @@ Pemain dimulai dari gerai kecil, melayani pelanggan secara simulasi, mengembangk
 ## Fitur di dalam game simulasi : 
 - Auto clicker sesuai pendapatan per detik
 - 10 Prestasi pencapaian
-- 5 Jenis Rasa Mie Gacoan
-- 5 Jenis Karyawan
-- Upgrade Restoran
+- 5 Jenis Rasa Mie Gacoan & Karyawan
+- Semua Upgradeable hingga level 50
 - Notifikasi Ketika Berhasil Upgrade
 - Notifikasi Uang Tidak Mencukupi
 - Responsive Untuk Mobile
 - Reset Game
-- Otomatis Tersimpan setiap 30 detik sekali
+- Otomatis Tersimpan setiap 30 detik sekali dengan notifikasi.
 
 ## Engine yang digunakan :
 - HTML
