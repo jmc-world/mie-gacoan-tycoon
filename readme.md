@@ -11,7 +11,8 @@ Pemain dimulai dari gerai kecil, melayani pelanggan secara simulasi, mengembangk
 - Notifikasi Ketika Berhasil Upgrade
 - Notifikasi Uang Tidak Mencukupi
 - Responsive Untuk Mobile
-- Simpan atau Reset Game Data
+- Reset Game
+- Otomatis Tersimpan setiap 30 detik sekali
 
 ## Engine yang digunakan :
 - HTML
