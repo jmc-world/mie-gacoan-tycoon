@@ -315,7 +315,7 @@
             margin-bottom: 20px;
         }
         
-        .save-btn, .reset-btn {
+        .reset-btn {
             padding: 12px 20px;
             border-radius: 50px;
             border: none;
@@ -329,14 +329,6 @@
             align-items: center;
             justify-content: center;
             touch-action: manipulation;
-        }
-        
-        .save-btn {
-            background: linear-gradient(135deg, #4dff91 0%, #1a8c4d 100%);
-            color: #1a1a2e;
-        }
-        
-        .reset-btn {
             background: linear-gradient(135deg, #e63946 0%, #a4161a 100%);
             color: white;
         }
@@ -408,7 +400,7 @@
                 align-items: center;
             }
             
-            .save-btn, .reset-btn {
+            .reset-btn {
                 width: 100%;
                 max-width: 300px;
             }
@@ -461,7 +453,7 @@
         }
         
         @supports (-webkit-touch-callout: none) {
-            .buy-btn, #serve-btn, .save-btn, .reset-btn {
+            .buy-btn, #serve-btn, .reset-btn {
                 cursor: pointer;
             }
             
@@ -589,9 +581,6 @@
         </div>
         
         <div class="save-section">
-            <button class="save-btn" id="save-game">
-                <i class="fas fa-save"></i> Simpan Game
-            </button>
             <button class="reset-btn" id="reset-game">
                 <i class="fas fa-redo"></i> Reset Game
             </button>
@@ -669,12 +658,13 @@
         const notification = document.getElementById('notification');
         const notificationMessage = document.getElementById('notification-message');
         const notificationOverlay = document.getElementById('notification-overlay');
-        const saveGameButton = document.getElementById('save-game');
         const resetGameButton = document.getElementById('reset-game');
         const completionMessage = document.getElementById('completion-message');
         
-        // Variabel untuk mengontrol interval pendapatan otomatis
+        // Variabel untuk mengontrol interval
         let autoIncomeInterval = null;
+        let customerInterval = null;
+        let saveInterval = null;
         
         // Fungsi helper untuk event mobile
         function addMobileEvent(element, event, handler) {
@@ -778,7 +768,6 @@
                 // Mulai interval pendapatan otomatis
                 if (!autoIncomeInterval) {
                     autoIncomeInterval = setInterval(addAutoIncome, 1000);
-                    showNotification("Pendapatan otomatis telah dimulai!");
                 }
             }
             
@@ -801,10 +790,15 @@
                 const cost = item.cost * Math.pow(1.5, item.level);
                 const button = document.querySelector(`[data-menu-id="${item.id}"]`);
                 if (button) {
-                    if (gameState.money >= cost) {
+                    if (gameState.money >= cost && item.level < 50) {
                         button.classList.remove('insufficient');
+                        button.disabled = false;
                     } else {
                         button.classList.add('insufficient');
+                        if (item.level >= 50) {
+                            button.disabled = true;
+                            button.textContent = "MAX";
+                        }
                     }
                 }
             });
@@ -814,10 +808,15 @@
                 const cost = upgrade.cost * Math.pow(5, upgrade.level);
                 const button = document.querySelector(`[data-upgrade-id="${upgrade.id}"]`);
                 if (button) {
-                    if (gameState.money >= cost) {
+                    if (gameState.money >= cost && upgrade.level < 50) {
                         button.classList.remove('insufficient');
+                        button.disabled = false;
                     } else {
                         button.classList.add('insufficient');
+                        if (upgrade.level >= 50) {
+                            button.disabled = true;
+                            button.textContent = "MAX";
+                        }
                     }
                 }
             });
@@ -827,10 +826,15 @@
                 const cost = employee.cost * Math.pow(2, employee.level);
                 const button = document.querySelector(`[data-employee-id="${employee.id}"]`);
                 if (button) {
-                    if (gameState.money >= cost) {
+                    if (gameState.money >= cost && employee.level < 50) {
                         button.classList.remove('insufficient');
+                        button.disabled = false;
                     } else {
                         button.classList.add('insufficient');
+                        if (employee.level >= 50) {
+                            button.disabled = true;
+                            button.textContent = "MAX";
+                        }
                     }
                 }
             });
@@ -846,17 +850,19 @@
                 
                 const cost = item.cost * Math.pow(1.5, item.level);
                 const hasEnoughMoney = gameState.money >= cost;
+                const isMaxLevel = item.level >= 50;
                 
                 menuItem.innerHTML = `
                     <div class="item-info">
                         <div class="item-name">${item.name}</div>
                         <div class="item-desc">${item.desc}</div>
-                        <div class="item-level">Level: ${item.level} | Pendapatan: ${formatMoney(item.baseIncome * item.level)}/detik</div>
+                        <div class="item-level">Level: ${item.level}/50 | Pendapatan: ${formatMoney(item.baseIncome * item.level)}/detik</div>
                     </div>
                     <div class="item-action">
-                        <div class="item-cost">${formatMoney(Math.floor(cost))}</div>
-                        <button class="buy-btn ${hasEnoughMoney ? '' : 'insufficient'}" data-menu-id="${item.id}">
-                            ${item.level === 0 ? 'Buka' : 'Upgrade'}
+                        <div class="item-cost">${isMaxLevel ? 'MAX' : formatMoney(Math.floor(cost))}</div>
+                        <button class="buy-btn ${isMaxLevel ? 'insufficient' : (hasEnoughMoney ? '' : 'insufficient')}" 
+                                data-menu-id="${item.id}" ${isMaxLevel ? 'disabled' : ''}>
+                            ${item.level === 0 ? 'Buka' : (isMaxLevel ? 'MAX' : 'Upgrade')}
                         </button>
                     </div>
                 `;
@@ -895,17 +901,19 @@
                 
                 const cost = upgrade.cost * Math.pow(2, upgrade.level);
                 const hasEnoughMoney = gameState.money >= cost;
+                const isMaxLevel = upgrade.level >= 50;
                 
                 upgradeItem.innerHTML = `
                     <div class="item-info">
                         <div class="item-name">${upgrade.name}</div>
                         <div class="item-desc">${upgrade.desc}</div>
-                        <div class="item-level">Level: ${upgrade.level} | Multiplier: ${upgrade.incomeMultiplier}x</div>
+                        <div class="item-level">Level: ${upgrade.level}/50 | Multiplier: ${upgrade.incomeMultiplier}x</div>
                     </div>
                     <div class="item-action">
-                        <div class="item-cost">${formatMoney(Math.floor(cost))}</div>
-                        <button class="buy-btn ${hasEnoughMoney ? '' : 'insufficient'}" data-upgrade-id="${upgrade.id}">
-                            ${upgrade.level === 0 ? 'Beli' : 'Upgrade'}
+                        <div class="item-cost">${isMaxLevel ? 'MAX' : formatMoney(Math.floor(cost))}</div>
+                        <button class="buy-btn ${isMaxLevel ? 'insufficient' : (hasEnoughMoney ? '' : 'insufficient')}" 
+                                data-upgrade-id="${upgrade.id}" ${isMaxLevel ? 'disabled' : ''}>
+                            ${upgrade.level === 0 ? 'Beli' : (isMaxLevel ? 'MAX' : 'Upgrade')}
                         </button>
                     </div>
                 `;
@@ -944,17 +952,19 @@
                 
                 const cost = employee.cost * Math.pow(1.8, employee.level);
                 const hasEnoughMoney = gameState.money >= cost;
+                const isMaxLevel = employee.level >= 50;
                 
                 employeeItem.innerHTML = `
                     <div class="item-info">
                         <div class="item-name">${employee.name}</div>
                         <div class="item-desc">${employee.desc}</div>
-                        <div class="item-level">Level: ${employee.level} | Pendapatan: +${formatMoney(employee.autoIncome * employee.level)}/detik</div>
+                        <div class="item-level">Level: ${employee.level}/50 | Pendapatan: +${formatMoney(employee.autoIncome * employee.level)}/detik</div>
                     </div>
                     <div class="item-action">
-                        <div class="item-cost">${formatMoney(Math.floor(cost))}</div>
-                        <button class="buy-btn ${hasEnoughMoney ? '' : 'insufficient'}" data-employee-id="${employee.id}">
-                            ${employee.level === 0 ? 'Hire' : 'Upgrade'}
+                        <div class="item-cost">${isMaxLevel ? 'MAX' : formatMoney(Math.floor(cost))}</div>
+                        <button class="buy-btn ${isMaxLevel ? 'insufficient' : (hasEnoughMoney ? '' : 'insufficient')}" 
+                                data-employee-id="${employee.id}" ${isMaxLevel ? 'disabled' : ''}>
+                            ${employee.level === 0 ? 'Hire' : (isMaxLevel ? 'MAX' : 'Upgrade')}
                         </button>
                     </div>
                 `;
@@ -1008,6 +1018,12 @@
             const menu = gameState.menu.find(m => m.id === menuId);
             const cost = menu.cost * Math.pow(1.5, menu.level);
             
+            // Cek apakah level sudah maksimal
+            if (menu.level >= 50) {
+                showNotification("Level maksimum telah tercapai!", true);
+                return;
+            }
+            
             // Cek apakah uang cukup
             if (gameState.money < cost) {
                 showNotification("Uang Anda Tidak Cukup!", true);
@@ -1033,6 +1049,12 @@
             const upgrade = gameState.upgrades.find(u => u.id === upgradeId);
             const cost = upgrade.cost * Math.pow(2, upgrade.level);
             
+            // Cek apakah level sudah maksimal
+            if (upgrade.level >= 50) {
+                showNotification("Level maksimum telah tercapai!", true);
+                return;
+            }
+            
             // Cek apakah uang cukup
             if (gameState.money < cost) {
                 showNotification("Uang Anda Tidak Cukup!", true);
@@ -1057,6 +1079,12 @@
         function hireEmployee(employeeId) {
             const employee = gameState.employees.find(e => e.id === employeeId);
             const cost = employee.cost * Math.pow(1.8, employee.level);
+            
+            // Cek apakah level sudah maksimal
+            if (employee.level >= 50) {
+                showNotification("Level maksimum telah tercapai!", true);
+                return;
+            }
             
             // Cek apakah uang cukup
             if (gameState.money < cost) {
@@ -1179,11 +1207,14 @@
             // Hanya tambah pendapatan otomatis jika sudah dimulai
             if (gameState.hasAutoIncomeStarted) {
                 gameState.money += gameState.autoIncome;
-                if (gameState.autoIncome > 0) {
-                    gameState.totalCustomers += Math.floor(gameState.autoIncome / 10);
-                }
                 updateStats();
             }
+        }
+        
+        // Tambahkan pelanggan setiap 5 detik
+        function addCustomer() {
+            gameState.totalCustomers++;
+            updateStats();
         }
         
         // Simpan game ke localStorage
@@ -1203,7 +1234,6 @@
             };
             
             localStorage.setItem('mieGacoanSave', JSON.stringify(saveData));
-            showNotification('Game berhasil disimpan!');
         }
         
         // Load game dari localStorage
@@ -1211,34 +1241,41 @@
             const savedData = localStorage.getItem('mieGacoanSave');
             
             if (savedData) {
-                const saveData = JSON.parse(savedData);
-                
-                gameState.money = saveData.money || 1000;
-                gameState.totalCustomers = saveData.totalCustomers || 0;
-                gameState.incomePerClick = saveData.incomePerClick || 50;
-                gameState.autoIncome = saveData.autoIncome || 0;
-                gameState.playTime = saveData.playTime || 0;
-                gameState.hasAutoIncomeStarted = saveData.hasAutoIncomeStarted || false;
-                gameState.allAchievementsUnlocked = saveData.allAchievementsUnlocked || false;
-                gameState.menu = saveData.menu || gameState.menu;
-                gameState.upgrades = saveData.upgrades || gameState.upgrades;
-                gameState.employees = saveData.employees || gameState.employees;
-                gameState.achievementList = saveData.achievementList || gameState.achievementList;
-                
-                updateStats();
-                renderMenuItems();
-                renderUpgradeItems();
-                renderEmployeeItems();
-                renderAchievements();
-                
-                // Tampilkan pesan penyelesaian jika semua prestasi telah terkumpul
-                if (gameState.allAchievementsUnlocked) {
-                    completionMessage.classList.add('show');
+                try {
+                    const saveData = JSON.parse(savedData);
+                    
+                    gameState.money = saveData.money || 1000;
+                    gameState.totalCustomers = saveData.totalCustomers || 0;
+                    gameState.incomePerClick = saveData.incomePerClick || 50;
+                    gameState.autoIncome = saveData.autoIncome || 0;
+                    gameState.playTime = saveData.playTime || 0;
+                    gameState.hasAutoIncomeStarted = saveData.hasAutoIncomeStarted || false;
+                    gameState.allAchievementsUnlocked = saveData.allAchievementsUnlocked || false;
+                    gameState.menu = saveData.menu || gameState.menu;
+                    gameState.upgrades = saveData.upgrades || gameState.upgrades;
+                    gameState.employees = saveData.employees || gameState.employees;
+                    gameState.achievementList = saveData.achievementList || gameState.achievementList;
+                    
+                    // Start intervals based on loaded state
+                    if (gameState.hasAutoIncomeStarted) {
+                        autoIncomeInterval = setInterval(addAutoIncome, 1000);
+                    }
+                    
+                    updateStats();
+                    renderMenuItems();
+                    renderUpgradeItems();
+                    renderEmployeeItems();
+                    renderAchievements();
+                    
+                    // Tampilkan pesan penyelesaian jika semua prestasi telah terkumpul
+                    if (gameState.allAchievementsUnlocked) {
+                        completionMessage.classList.add('show');
+                    }
+                    
+                } catch (error) {
+                    console.error("Error loading saved game:", error);
+                    showNotification("Error memuat data game. Dimulai dari awal.");
                 }
-                
-                showNotification('Game berhasil dimuat!');
-            } else {
-                showNotification('Tidak ada data game yang tersimpan.');
             }
         }
         
@@ -1323,12 +1360,6 @@
                 updateStats();
             });
             
-            saveGameButton.addEventListener('click', saveGame);
-            addMobileEvent(saveGameButton, 'touchstart', (e) => {
-                e.preventDefault();
-                saveGame();
-            });
-            
             resetGameButton.addEventListener('click', resetGame);
             addMobileEvent(resetGameButton, 'touchstart', (e) => {
                 e.preventDefault();
@@ -1337,6 +1368,12 @@
             
             // Setup play time counter
             setInterval(updatePlayTime, 1000);
+            
+            // Setup customer interval (setiap 5 detik)
+            customerInterval = setInterval(addCustomer, 5000);
+            
+            // Setup autosave interval (setiap 30 detik)
+            saveInterval = setInterval(saveGame, 30000);
             
             // Initial render
             updateStats();
